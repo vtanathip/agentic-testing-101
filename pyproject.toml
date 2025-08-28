@@ -4,4 +4,7 @@ version = "0.1.0"
 description = "An example of using local MCP and LangChain to test an agentic system."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "langchain-mcp-adapters>=0.1.9",
+    "langgraph>=0.6.6",
+]
