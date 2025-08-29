@@ -19,8 +19,19 @@ This project aims to create a chatbot that can run automated tests using Natural
 ## Getting Started
 
 1. Clone the repository.
-2. Install dependencies.
-3. Follow the setup instructions (to be added) to run the chatbot and connect it to Playwright MCP.
+2. Create a virtual environment using [UV](https://github.com/astral-sh/uv):
+
+   ```shell
+   uv venv
+   ```
+
+3. Install dependencies using UV:
+
+   ```shell
+   uv sync
+   ```
+
+4. Follow the setup instructions (to be added) to run the chatbot and connect it to Playwright MCP.
 
 ## Future Work
 
