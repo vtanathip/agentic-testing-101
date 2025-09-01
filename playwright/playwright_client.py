@@ -20,14 +20,13 @@ async def main():
 
     async with client.session("playwright") as session:
         tools = await load_mcp_tools(session)
-        model = ChatOllama(model="llama3.2")
+        model = ChatOllama(model="llama3.2", temperature=0.1)
         agent = create_react_agent(
             model, tools
         )
         playwright_response = await agent.ainvoke(
             {"messages": [
-                {"role": "user", "content": "open google chrome browser and search for langchain mcp"},
-                {"role": "user", "content": "maximize the window of the browser"},]}
+                {"role": "user", "content": "Open Google Chrome, search for 'langchain mcp', and then maximize the browser window, and wait for 30 second before close browser window"},]}
         )
         print("Playwright Response:",
               playwright_response['messages'][-1].content)
