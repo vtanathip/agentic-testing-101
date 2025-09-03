@@ -1,38 +1,24 @@
-# LangGraph ReAct Agent with Playwright Tools
+# Playwright MCP Agent Example
 
-This project demonstrates how to build a simple, yet powerful, autonomous agent using **LangGraph**. The agent is powered by a local LLM from **Ollama** (`llama3.2`) and equipped with web browsing tools provided by **Playwright**.
+## 1. How It Works
 
-The core of this example is to show how an agent can be given a high-level task (like "search for something on Google") and use external tools to execute it step-by-step.
+This example demonstrates how to use a chatbot agent to automate browser actions using Playwright via the Model Context Protocol (MCP). The agent leverages a local LLM (Ollama's `llama3.2`) to interpret natural language instructions and execute them step-by-step through Playwright tools.
 
----
+- The agent is initialized with a local LLM and connects to a Playwright MCP server.
+- It receives a high-level instruction (e.g., "Navigate to a login page, fill in credentials, and verify login").
+- The agent reasons about the steps required, interacts with the Playwright server to perform browser automation, and returns the result.
 
-## ⚙️ How It Works
+## 2. Prerequisites
 
-The script executes the following steps:
+- **Python 3.9+**
+- **Ollama** installed and running
+- **Llama 3.2** model pulled in Ollama
+- **Playwright Tool Server** running in standalone mode on port `8931`
+- **Phoenix** LLM Monitoring Tool
 
-1. **Initialize Client:** It connects to a `MultiServerMCPClient`, which is a server exposing tools to our LangChain application. In this case, it's configured to connect to a server that provides **Playwright** browser automation tools.
-2. **Fetch Tools:** It asynchronously retrieves the list of available tools from the server (e.g., `open_url`, `search`, `click_element`).
-3. **Setup LLM:** It initializes a `ChatOllama` instance to use the local `llama3.2` model as the agent's "brain."
-4. **Create Agent:** It uses LangGraph's prebuilt `create_react_agent` function. A **ReAct** agent works in a loop: it Reasons about what to do next and then Acts by selecting a tool to achieve its goal.
-5. **Invoke Agent:** The agent is given the prompt "open google.com and search for langchain mcp".
-6. **Execute & Respond:** The agent reasons that it first needs to open a URL and then search. It calls the appropriate Playwright tools in sequence to complete the task and returns the final result.
+## 3. How to Run the Script
 
----
-
-## 📋 Prerequisites
-
-Before you can run this script, you need to have the following running on your machine:
-
-* **Python 3.9+**
-* **Ollama:** You must have Ollama installed and running.
-* **Llama 3.2 Model:** The specific model used in the script must be pulled.
-* **Playwright Tool Server:** The `Playwright Standalone Mode` must be running and listening on port `8931`.
-
----
-
-## 🚀 Setup and Installation
-
-1. **Clone the repository (if applicable)**
+1. **Clone the repository (if needed):**
 
     ```bash
     git clone <your-repo-url>
@@ -51,23 +37,32 @@ Before you can run this script, you need to have the following running on your m
     ```bash
     ollama pull llama3.2
     ollama list
+    ollama serve
     ```
 
 4. **Start the Playwright Tool Server:**
-    In a separate terminal, run the `playwright standalone mode`
 
     ```bash
     npx @playwright/mcp@latest --port 8931
     ```
 
-    *This server acts as a bridge, allowing the LangGraph agent to call Playwright functions.*
+5. **Start Phoenix Monitoring**
 
----
+    ```bash
+    docker-compose up -d
+    ```
 
-## ▶️ Running the Script
+6. **Run the agent script:**
 
-Once the setup is complete and the tool server is running, execute the Python script:
+    ```bash
+    python playwright_client.py
+    ```
 
-```bash
-python playwright_client.py
-```
+The script will instruct the agent to:
+
+- Navigate to a login page,
+- Fill in the username and password,
+- Click the submit button,
+- Verify successful login by checking for a confirmation message.
+
+The result will be printed in the terminal.
