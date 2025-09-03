@@ -1,9 +1,7 @@
 from dotenv import load_dotenv
+from mcp_use import MCPAgent, MCPClient
 import asyncio
-from langchain_mcp_adapters.client import MultiServerMCPClient
-from langgraph.prebuilt import create_react_agent
 from langchain_ollama import ChatOllama
-from langchain_mcp_adapters.tools import load_mcp_tools
 from phoenix.otel import register
 
 # Recommended: Enable automatic instrumentation
@@ -12,30 +10,35 @@ tracer_provider = register(
     auto_instrument=True,  # Automatically instruments AI/ML libraries
     batch=True  # Recommended for production - exports spans in background
 )
-load_dotenv()
 
 
 async def main():
-    client = MultiServerMCPClient(
-        {
+    # Create configuration dictionary
+    config = {
+        "mcpServers": {
             "playwright": {
-                "url": "http://localhost:8931/mcp/",
-                "transport": "streamable_http",
+                "command": "npx",
+                "args": ["@playwright/mcp@latest"],
+                "env": {
+                    "DISPLAY": ":1"
+                }
             }
         }
-    )
+    }
 
-    async with client.session("playwright") as session:
-        tools = await load_mcp_tools(session)
-        model = ChatOllama(model="llama3.2", temperature=0.1)
-        agent = create_react_agent(
-            model, tools
-        )
-        playwright_response = await agent.ainvoke(
-            {"messages": [
-                {"role": "user", "content": "Open Google Chrome, search for 'langchain mcp', and then maximize the browser window, and wait for 30 second before close browser window"},]}
-        )
-        print("Playwright Response:",
-              playwright_response['messages'][-1].content)
+    # Create MCPClient from configuration dictionary
+    client = MCPClient.from_dict(config)
+    model = ChatOllama(model="llama3.2", temperature=0.1)
+    # Create agent with the client
+    agent = MCPAgent(llm=model, client=client, max_steps=30)
+
+    # Run the query
+    result = await agent.run(
+        """ Navigate to https://practicetestautomation.com/practice-test-login/.
+        Fill username 'student' and password 'Password123'.
+        Click the 'Submit' button.
+        Verify that the login is successful by checking for a confirmation message.""",
+    )
+    print(f"\nResult: {result}")
 
 asyncio.run(main())
