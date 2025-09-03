@@ -1,10 +1,17 @@
+from dotenv import load_dotenv
 import asyncio
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
 from langchain_ollama import ChatOllama
 from langchain_mcp_adapters.tools import load_mcp_tools
+from phoenix.otel import register
 
-from dotenv import load_dotenv
+# Recommended: Enable automatic instrumentation
+tracer_provider = register(
+    project_name="my-llm-app",
+    auto_instrument=True,  # Automatically instruments AI/ML libraries
+    batch=True  # Recommended for production - exports spans in background
+)
 load_dotenv()
 
 
