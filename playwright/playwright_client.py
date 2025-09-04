@@ -28,7 +28,7 @@ async def main():
 
     # Create MCPClient from configuration dictionary
     client = MCPClient.from_dict(config)
-    model = ChatOllama(model="llama3.2", temperature=0.1)
+    model = ChatOllama(model="gpt-oss", temperature=0.1)
     # Create agent with the client
     agent = MCPAgent(llm=model, client=client, max_steps=30)
 
